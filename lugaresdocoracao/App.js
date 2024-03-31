@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, StatusBar, Image } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { TelaSegura } from './components/TelaSegura';
 import { styles } from './assets/style';
+import { Entypo } from '@expo/vector-icons';
 
 export default function App() {
   const [biometria, setBiometria] = useState(false);
@@ -43,12 +44,12 @@ export default function App() {
   } else {
     return (
       <View style={styles.container}>
-        <Image source={require('./assets/Icon-central.jpg')} style={{ width: 100, height: 100, marginBottom: 20 }} />
+        <Image source={require('./assets/Icon-central.png')} style={{ width: 100, height: 100, marginBottom: 20 }} />
         <Text style={styles.title}>
           {biometria ? 'Olá!' : 'Dispositivo não compatível com biometria'}
         </Text>
         <TouchableOpacity onPress={changeRender}>
-          <Text style={styles.button}>Login </Text>
+          <Text style={styles.buttonDigital}><Entypo name="fingerprint" size={60} color="black" /> </Text>
         </TouchableOpacity>
         <StatusBar style="auto" />
       </View>
