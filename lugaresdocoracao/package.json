@@ -21,7 +21,8 @@
     "react-navigation": "^5.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "package.json": "^2.0.1"
   },
   "private": true
 }
