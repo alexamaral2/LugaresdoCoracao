@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import { styles } from '../assets/style.js';
 import { CameraComponent } from './Camera.js'; 
+import { MapComponent } from './Map.js'; 
 import { AntDesign, Entypo } from '@expo/vector-icons';
 
 export function TelaSegura({ onLogout }) {
   const [cameraVisible, setCameraVisible] = useState(false);
+  const [mapVisible, setMapVisible] = useState(false); 
 
   const handleLogout = () => {
     onLogout();
@@ -19,6 +21,14 @@ export function TelaSegura({ onLogout }) {
     setCameraVisible(false);
   };
 
+  const handleOpenMap = () => {
+    setMapVisible(true);
+  };
+
+  const handleCloseMap = () => {
+    setMapVisible(false);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Bem Vindo! </Text>
@@ -26,13 +36,18 @@ export function TelaSegura({ onLogout }) {
         <TouchableOpacity onPress={handleOpenCamera}>
           <AntDesign name="camera" size={50} color="black" />
         </TouchableOpacity>
-        <Entypo name="map" size={50} color="black" />
+        <TouchableOpacity onPress={handleOpenMap}>
+          <Entypo name="map" size={50} color="black" />
+        </TouchableOpacity>
         <TouchableOpacity onPress={handleLogout}>
           <AntDesign name="poweroff" size={50} color="black" />
         </TouchableOpacity>
       </View>
       <Modal visible={cameraVisible} animationType="slide">
         <CameraComponent onClose={handleCloseCamera} />
+      </Modal>
+      <Modal visible={mapVisible} animationType="slide" onRequestClose={handleCloseMap}>
+        <MapComponent onClose={handleCloseMap} />
       </Modal>
     </View>
   );
