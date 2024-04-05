@@ -61,11 +61,11 @@ export default StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    bottom: 23, 
-    marginLeft: -50,
+    left: 0,
     backgroundColor: 'transparent',
-    padding: 60
-  },
+    padding: 10,
+    bottom: '10%' 
+},
   closeButtonText: {
     color: '#fff',
     fontWeight: 'bold'
