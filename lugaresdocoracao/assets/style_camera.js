@@ -35,7 +35,8 @@ export default StyleSheet.create({
     backgroundColor: '#fff',
     width: 50,
     height: 50,
-    borderRadius: 25
+    borderRadius: 25,
+    left : '290%'
   },
   contentPhoto: {
     flex: 1,
@@ -57,10 +58,10 @@ export default StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: 20,
-    right: 20,
+    bottom: 23, 
+    right: '53%',
     backgroundColor: 'transparent',
-    padding: 10
+    padding: 60
   },
   closeButtonText: {
     color: '#fff',

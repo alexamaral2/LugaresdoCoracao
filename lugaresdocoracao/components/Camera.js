@@ -59,6 +59,9 @@ export function CameraComponent({ onClose }) {
     <SafeAreaView style={styles.container}>
       <Camera style={styles.camera} type={type} ref={ref}>
         <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.buttonTake} onPress={take}>
+            <Image style={styles.icon} source={require("../assets/camera.png")} />
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.buttonFlip}
             onPress={() => {
@@ -69,9 +72,6 @@ export function CameraComponent({ onClose }) {
               );
             }}>
             <Image style={styles.icon} source={require("../assets/flip.png")} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonTake} onPress={take}>
-            <Image style={styles.icon} source={require("../assets/camera.png")} />
           </TouchableOpacity>
         </View>
       </Camera>
