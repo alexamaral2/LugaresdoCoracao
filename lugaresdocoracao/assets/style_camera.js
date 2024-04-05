@@ -36,7 +36,7 @@ export default StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    marginLeft: 150,
+    marginLeft: '45%',
   },
   contentPhoto: {
     flex: 1,
