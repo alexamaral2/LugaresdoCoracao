@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Image, Modal, SafeAreaView, Text, View, TouchableOpacity } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
+import { AntDesign, MaterialIcons, SimpleLineIcons } from '@expo/vector-icons';
 import styles from '../assets/style_camera.js';
 
 export function CameraComponent({ onClose }) {
@@ -60,7 +61,7 @@ export function CameraComponent({ onClose }) {
       <Camera style={styles.camera} type={type} ref={ref}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.buttonTake} onPress={take}>
-            <Image style={styles.icon} source={require("../assets/camera.png")} />
+          <SimpleLineIcons name="camera" size={24} color="black" />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.buttonFlip}
@@ -71,21 +72,21 @@ export function CameraComponent({ onClose }) {
                   : Camera.Constants.Type.back
               );
             }}>
-            <Image style={styles.icon} source={require("../assets/flip.png")} />
+            <MaterialIcons name="flip-camera-android" size={24} color="black" />
           </TouchableOpacity>
         </View>
       </Camera>
       <Modal transparent={true} visible={open} >
         <View style={styles.contentPhoto}>
           <TouchableOpacity style={styles.buttonClose} onPress={handleClose}>
-            <Image style={styles.icon} source={require("../assets/close.png")} />
+          <AntDesign name="closecircleo" size={24} color="black" />
           </TouchableOpacity>
           <Image style={styles.img} source={{ uri: captured }} />
         </View>
       </Modal>
       {showCloseButton && ( 
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Text style={styles.closeButtonText}>Fechar Câmera</Text>
+          <AntDesign name="closecircleo" size={50} color="white" />
         </TouchableOpacity>
       )}
     </SafeAreaView>

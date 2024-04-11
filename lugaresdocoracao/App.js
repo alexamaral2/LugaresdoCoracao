@@ -44,7 +44,7 @@ export default function App() {
   } else {
     return (
       <View style={styles.container}>
-        <Image source={require('./assets/Icon-central.png')} style={{ width: 100, height: 100, marginBottom: 20 }} />
+        <Image source={require('./assets/Icon-central.png')} style={{ width: 400, height: 400, marginBottom: 20 }} />
         <Text style={styles.title}>
           {biometria ? 'Olá!' : 'Dispositivo não compatível com biometria'}
         </Text>
