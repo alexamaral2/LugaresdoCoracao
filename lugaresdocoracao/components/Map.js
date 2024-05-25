@@ -5,12 +5,9 @@ import * as Location from 'expo-location';
 import { AntDesign } from '@expo/vector-icons';
 
 export function MapComponent({ onClose }) {
-
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [lastMarker, setLastMarker] = useState(null);
-  const [locationText, setLocationText] = useState('Aguarde...');
-  const [markerText, setMarkerText] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -27,26 +24,13 @@ export function MapComponent({ onClose }) {
 
   const handleMapPress = (event) => {
     const { coordinate } = event.nativeEvent;
-    const newMarker = {
-      latitude: coordinate.latitude,
-      longitude: coordinate.longitude,
-      title: `Novo Marcador`,
-      description: 'Nova Localização selcionada.',
-    };
-    setLastMarker(newMarker);
-    setMarkerText(`Marcador Selecionado: ${JSON.stringify(newMarker)}`);
+    setLastMarker(coordinate);
   };
-
-  useEffect(() => {
-    if (location) {
-      setLocationText(`Localização atual: ${JSON.stringify(location)}`);
-    }
-  }, [location]);
 
   return (
     <View style={styles.container}>
       <View style={styles.closeIconContainer}>
-        <TouchableOpacity onPress={onClose}>
+        <TouchableOpacity onPress={() => onClose(lastMarker)}>
           <AntDesign name="close" size={24} color="black" />
         </TouchableOpacity>
       </View>
@@ -57,8 +41,8 @@ export function MapComponent({ onClose }) {
             {
               latitude: 0,
               longitude: 0,
-              latitudeDelta: 0,
-              longitudeDelta: 1000,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
             } :
             {
               latitude: location.latitude,
@@ -82,15 +66,15 @@ export function MapComponent({ onClose }) {
         {lastMarker && (
           <Marker
             coordinate={lastMarker}
-            title={lastMarker.title}
-            description={lastMarker.description}
+            title="Novo Marcador"
+            description="Nova Localização selecionada."
           />
         )}
       </MapView>
       <View style={styles.textContainer}>
         <ScrollView style={styles.scrollView}>
-          <Text style={styles.text}>{locationText}</Text>
-          <Text style={styles.text}>{markerText}</Text>
+          <Text style={styles.text}>{errorMsg || `Localização atual: ${JSON.stringify(location)}`}</Text>
+          <Text style={styles.text}>{lastMarker ? `Marcador Selecionado: ${JSON.stringify(lastMarker)}` : 'Toque no mapa para selecionar um marcador'}</Text>
         </ScrollView>
       </View>
     </View>
