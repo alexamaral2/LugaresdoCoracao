@@ -47,6 +47,18 @@ export const styles = StyleSheet.create({
     bottom: 16,
     elevation: 8,
   },
+  floatingButtonRemove: {
+    position: 'absolute',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#6200EE',
+    alignItems: 'center',
+    justifyContent: 'center',
+    left: '63%',
+    bottom: 16,
+    elevation: 8,
+  },
   logoutButton: {
     position: 'absolute',
     top: 16,
@@ -175,6 +187,15 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     width: '100%', 
   },
+  input: {
+    padding: 10,
+    width: '100%',
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    backgroundColor: '#f5f5f5',
+  },
   textAreaContainer: {
     width: '100%', 
   },
@@ -183,5 +204,9 @@ export const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     
+  },
+  errorMessage: {
+    color: 'red',
+    marginBottom: 10,
   },
 });

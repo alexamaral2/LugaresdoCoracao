@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, Image, ScrollView, TextInput } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { styles } from '../assets/style.js';
 import { CameraComponent } from './Camera.js'; 
 import { MapComponent } from './Map.js';
 import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons';
+import { initDB, insertLugar, fetchLugares, deleteLugar, updateLugar, syncLugaresWithFirebase } from './Database';
 
 
 export function TelaSegura({ onLogout }) {
+  const [errorMessage, setErrorMessage] = useState('');
+  const [editId, setEditId] = useState(null);
+  const [titulo, setTitulo] = useState('');
+  const [descricao, setDescricao] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [cameraVisible, setCameraVisible] = useState(false);
   const [mapVisible, setMapVisible] = useState(false);
@@ -16,6 +21,18 @@ export function TelaSegura({ onLogout }) {
     imageUri: '',
     mapCoordinates: null,
   });
+
+  useEffect(() => {
+    initDB();
+    loadLugares();
+    syncLugaresWithFirebase();
+  }, []);
+
+  const loadLugares = () => {
+    fetchLugares((success, data) => {
+      if (success) setFormDatas(data);
+    });
+  };
 
   const handleLogout = () => {
     onLogout();
@@ -26,6 +43,12 @@ export function TelaSegura({ onLogout }) {
   };
 
   const handleCloseModal = () => {
+    setEditId(null);
+    setTitulo('');
+    setCurrentData({imageUri: '', mapCoordinates: null });
+    setDescricao('');
+    setErrorMessage('');
+    loadLugares();
     setModalVisible(false);
   };
 
@@ -34,8 +57,13 @@ export function TelaSegura({ onLogout }) {
     setModalVisible(false);
   };
 
-  const handleCloseCamera = () => {
+  const handleCloseCamera = (imageUri) => {
+    setCurrentData(prevData => ({
+      ...prevData,
+      imageUri: imageUri,
+    }));
     setCameraVisible(false);
+    setModalVisible(true);
   };
 
   const handleOpenMap = () => {
@@ -49,23 +77,71 @@ export function TelaSegura({ onLogout }) {
       mapCoordinates: coordinates,
     }));
     setMapVisible(false);
+    setModalVisible(true);
+  };
+  
+  const handleUpdate = (latitude, longitude, image) => {
+    if (editId !== null) {
+      updateLugar(editId,  titulo, latitude , longitude, image, descricao, (success, data) => {
+        if (success) {
+          setEditId(null);
+          setTitulo('');
+          setCurrentData({imageUri: '', mapCoordinates: null });
+          setDescricao('');
+          loadLugares();
+          setModalVisible(false);
+        }
+      });
+    }
   };
 
-  const handleSaveFormData = () => {
-     setFormDatas(prevFormDatas => [
-      ...prevFormDatas,
-      {
-        imageUri: currentData.imageUri || 'https://via.placeholder.com/400',
-        mapCoordinates: currentData.mapCoordinates || {
-          latitude: -23.55052,
-          longitude: -46.633308,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        },
-      }, 
-    ]);
-    setModalVisible(false);
-    setCurrentData({ imageUri: '', mapCoordinates: null });
+  const handleEdit = (id, title, image, latitude, longitude, descricao) => {
+    setEditId(id),
+    setTitulo(title),
+    setCurrentData({imageUri: image, mapCoordinates: {latitude: latitude,longitude: longitude}}),
+    setDescricao(descricao),
+    setModalVisible(true)
+  };
+
+  const handleDelete = (id) => {
+    deleteLugar(id, (success, data) => {
+      if (success) loadLugares();
+    });
+  };
+
+  const handleSaveFormData = () => {   
+    if (!titulo.trim()) {
+      setErrorMessage('O título é obrigatório.');
+      return;
+    }
+    if (!currentData.imageUri) {
+      setErrorMessage('A imagem é obrigatória.');
+      return;
+    }
+    if (!currentData.mapCoordinates) {
+      setErrorMessage('A localização é obrigatória.');
+      return;
+    }
+    setErrorMessage('');
+
+    const { latitude, longitude } = currentData.mapCoordinates;
+    let image = currentData.imageUri;
+
+    if (editId !== null) {
+      handleUpdate(latitude, longitude, image);
+    } else {
+      if (titulo !== '') {
+        insertLugar(titulo, latitude, longitude, image, descricao, (success, data) => {
+          if (success) {
+            setTitulo('');
+            setCurrentData({imageUri: '', mapCoordinates: null });
+            setDescricao('');
+            loadLugares();
+            setModalVisible(false);
+          }
+        });
+      }
+    }
   };
 
   return (
@@ -80,15 +156,23 @@ export function TelaSegura({ onLogout }) {
       <ScrollView style={styles.scrollView}>
       {formDatas.map((data, index) => (
         <View key={index} style={styles.card}>
-          <Text style={styles.cardTitle}>Informação do Card</Text>
-          <Image source={{ uri: data.imageUri }} style={styles.cardImage} />
+          <Text style={styles.cardTitle}>{data.title}</Text>
+          <Image
+     source={{
+        uri: `data:image/jpeg;base64,${data.image}`,}} style={styles.cardImage} />
           <MapView
             style={styles.cardMap}
             initialRegion={data.mapCoordinates}
           >
-            <Marker coordinate={data.mapCoordinates} />
+            <Marker coordinate={{ latitude: data.latitude, longitude: data.longitude }} />
           </MapView>
-          <Text style={styles.cardContent}>Hic card brevem descriptionem continet. Textus est in lingua Latina. Utilis ad informationem essentialem et concisam praebendam. </Text>
+          <Text style={styles.cardContent}>{data.description}</Text>
+          <TouchableOpacity style={styles.floatingButtonRemove} onPress={() => handleDelete(data.id)}>
+            <AntDesign name="delete" size={24} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.floatingButton} onPress={() => handleEdit(data.id, data.title, data.image, data.latitude, data.longitude, data.description)}>
+            <AntDesign name="edit" size={24} color="white" />
+          </TouchableOpacity>
         </View>
       ))}
       </ScrollView>
@@ -100,6 +184,12 @@ export function TelaSegura({ onLogout }) {
       <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Cadastre um Lugar no seu coração </Text>
+          {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+          <View style={styles.textAreaContainer}>
+          <TouchableOpacity>
+            <TextInput style={styles.input} value={titulo} onChangeText={setTitulo} placeholder="Titulo (Obrigatório)" />
+          </TouchableOpacity>
+          </View>
           <TouchableOpacity style={styles.modalOption} onPress={handleOpenCamera}>
             <Text style={styles.modalOptionText}> <AntDesign name="camerao" size={24} color="black" /> | Foto </Text>
           </TouchableOpacity>
@@ -108,7 +198,7 @@ export function TelaSegura({ onLogout }) {
           </TouchableOpacity>
           <View style={styles.textAreaContainer}>
           <TouchableOpacity>
-            <TextInput style={styles.modalInput} placeholder="Descrição (Opcional)" />
+            <TextInput style={styles.modalInput} value={descricao} onChangeText={setDescricao} placeholder="Descrição (Opcional)" />
           </TouchableOpacity>
           </View>
           <View style={styles.modalButtonContainer}>
@@ -123,7 +213,7 @@ export function TelaSegura({ onLogout }) {
       </Modal>
       
 
-      <Modal visible={cameraVisible} animationType="slide">
+      <Modal visible={cameraVisible} animationType="slide"  onRequestClose={() => handleCloseCamera(currentData.imageUri)}>
         <CameraComponent onClose={handleCloseCamera} />
       </Modal>
       <Modal visible={mapVisible} animationType="slide" onRequestClose={() => handleCloseMap(currentData.mapCoordinates)}>

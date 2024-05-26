@@ -4,6 +4,7 @@ import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { AntDesign, MaterialIcons, SimpleLineIcons } from '@expo/vector-icons';
 import styles from '../assets/style_camera.js';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 export function CameraComponent({ onClose }) {
   const ref = useRef(null);
@@ -13,6 +14,7 @@ export function CameraComponent({ onClose }) {
   const [captured, setCaptured] = useState(null);
   const [open, setOpen] = useState(false);
   const [showCloseButton, setShowCloseButton] = useState(true); 
+  const [base64Image, setBase64Image] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -38,11 +40,18 @@ export function CameraComponent({ onClose }) {
 
   async function take() {
     if (ref) {
-      const data = await ref.current.takePictureAsync();
+      const data = await ref.current.takePictureAsync({quality: 0});
+      const resizedImage = await ImageManipulator.manipulateAsync(
+        data.uri,
+        [{ resize: { width: 600, height: 600 } }], 
+        { compress: 1, format: ImageManipulator.SaveFormat.JPEG, base64: true }
+      );
+      
+      setBase64Image(resizedImage.base64.replaceAll(" ", "+")); 
+           
       setCaptured(data.uri);
       setOpen(true);
       setShowCloseButton(false);
-      console.log(data);
       if (hasMediaLibraryPermission === true) {
         await MediaLibrary.saveToLibraryAsync(data.uri);
       } else {
@@ -85,7 +94,7 @@ export function CameraComponent({ onClose }) {
         </View>
       </Modal>
       {showCloseButton && ( 
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+        <TouchableOpacity style={styles.closeButton} onPress={() => onClose(base64Image)}>
           <AntDesign name="closecircleo" size={50} color="white" />
         </TouchableOpacity>
       )}
