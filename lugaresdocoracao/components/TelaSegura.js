@@ -162,7 +162,12 @@ export function TelaSegura({ onLogout }) {
         uri: `data:image/jpeg;base64,${data.image}`,}} style={styles.cardImage} />
           <MapView
             style={styles.cardMap}
-            initialRegion={data.mapCoordinates}
+            initialRegion={{
+              latitude: data.latitude,
+              longitude: data.longitude,
+              latitudeDelta: 0.005,
+              longitudeDelta: 0.005,
+            }}
           >
             <Marker coordinate={{ latitude: data.latitude, longitude: data.longitude }} />
           </MapView>
