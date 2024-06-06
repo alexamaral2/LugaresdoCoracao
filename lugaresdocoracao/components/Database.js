@@ -1,7 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 import NetInfo from '@react-native-community/netinfo';
 import { doc, getDoc, setDoc, updateDoc, deleteDoc, getDocs, collection } from 'firebase/firestore/lite';
-import { db as dbfirebase } from './firebaseConfig'; 
+import { db as dbfirebase } from './firebaseConfig';
 
 const db = SQLite.openDatabase("bd23123123.db");
 

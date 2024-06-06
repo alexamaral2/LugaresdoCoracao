@@ -6,10 +6,13 @@ export default StyleSheet.create({
     height: 30
   },
   container: {
-    flex: 1
+    flex: 1,
+    justifyContent: 'center', // Centraliza verticalmente
+    alignItems: 'center' // Centraliza horizontalmente
   },
   camera: {
-    flex: 1
+    flex: 1,
+    width: '100%'
   },
   buttonContainer: {
     position: 'absolute',
@@ -36,10 +39,7 @@ export default StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    left: 0,
-    right: 0,
+    left: 200
   },
   contentPhoto: {
     flex: 1,
@@ -57,7 +57,21 @@ export default StyleSheet.create({
     backgroundColor: '#fff',
     width: 50,
     height: 50,
-    borderRadius: 25
+    borderRadius: 25,
+    position: 'absolute',
+    top: 20,
+    right: 20,
+  },
+  buttonConfirm: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    position: 'absolute',
+    top: 20,
+    left: 20,
   },
   closeButton: {
     position: 'absolute',
@@ -65,7 +79,7 @@ export default StyleSheet.create({
     backgroundColor: 'transparent',
     padding: 5,
     bottom: '6%' 
-},
+  },
   closeButtonText: {
     color: '#fff',
     fontWeight: 'bold'

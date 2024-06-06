@@ -65,12 +65,18 @@ export function CameraComponent({ onClose }) {
     setShowCloseButton(true); 
   }
 
+  function handleConfirm() {
+    onClose(base64Image);
+    setOpen(false);
+    setShowCloseButton(true);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Camera style={styles.camera} type={type} ref={ref}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.buttonTake} onPress={take}>
-          <SimpleLineIcons name="camera" size={24} color="black" />
+            <SimpleLineIcons name="camera" size={24} color="black" />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.buttonFlip}
@@ -85,16 +91,19 @@ export function CameraComponent({ onClose }) {
           </TouchableOpacity>
         </View>
       </Camera>
-      <Modal transparent={true} visible={open} >
+      <Modal transparent={true} visible={open}>
         <View style={styles.contentPhoto}>
           <TouchableOpacity style={styles.buttonClose} onPress={handleClose}>
-          <AntDesign name="closecircleo" size={24} color="black" />
+            <AntDesign name="closecircleo" size={24} color="black" />
           </TouchableOpacity>
           <Image style={styles.img} source={{ uri: captured }} />
+          <TouchableOpacity style={styles.buttonConfirm} onPress={handleConfirm}>
+            <AntDesign name="checkcircleo" size={24} color="black" />
+          </TouchableOpacity>
         </View>
       </Modal>
       {showCloseButton && ( 
-        <TouchableOpacity style={styles.closeButton} onPress={() => onClose(base64Image)}>
+        <TouchableOpacity style={styles.closeButton} onPress={() => onClose(null)}>
           <AntDesign name="closecircleo" size={50} color="white" />
         </TouchableOpacity>
       )}

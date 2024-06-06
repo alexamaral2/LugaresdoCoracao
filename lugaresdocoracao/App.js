@@ -49,7 +49,7 @@ export default function App() {
           {biometria ? 'Olá!' : 'Dispositivo não compatível com biometria'}
         </Text>
         <TouchableOpacity onPress={changeRender}>
-          <Text style={styles.buttonDigital}><Entypo name="fingerprint" size={60} color="black" /> </Text>
+          <Text style={styles.buttonDigital}><Entypo name="fingerprint" size={60} color="#fff" /> </Text>
         </TouchableOpacity>
         <StatusBar style="auto" />
       </View>

@@ -28,10 +28,14 @@ export function MapComponent({ onClose }) {
     setMarker(coordinate);
   };
 
+  const handleConfirm = () => {
+    onClose(marker);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.closeIconContainer}>
-        <TouchableOpacity onPress={() => onClose(marker)}>
+        <TouchableOpacity onPress={() => onClose(null)}>
           <AntDesign name="close" size={24} color="black" />
         </TouchableOpacity>
       </View>
@@ -69,6 +73,11 @@ export function MapComponent({ onClose }) {
           <Text style={styles.text}>{marker ? `Marcador Selecionado: ${JSON.stringify(marker)}` : 'Toque no mapa para selecionar um marcador'}</Text>
         </ScrollView>
       </View>
+      <View style={styles.confirmButtonContainer}>
+        <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
+          <Text style={styles.confirmButtonText}>Confirmar Localização </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -82,7 +91,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: "100%",
-    height: "80%",
+    height: "70%",
   },
   textContainer: {
     alignItems: 'center',
@@ -101,5 +110,19 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     width: '100%',
+  },
+  confirmButtonContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  confirmButton: {
+    backgroundColor: '#2196F3',
+    padding: 10,
+    borderRadius: 5,
+  },
+  confirmButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });

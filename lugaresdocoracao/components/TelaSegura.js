@@ -7,7 +7,6 @@ import { MapComponent } from './Map.js';
 import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons';
 import { initDB, insertLugar, fetchLugares, deleteLugar, updateLugar, syncLugaresWithFirebase } from './Database';
 
-
 export function TelaSegura({ onLogout }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [editId, setEditId] = useState(null);
@@ -21,7 +20,10 @@ export function TelaSegura({ onLogout }) {
     imageUri: '',
     mapCoordinates: null,
   });
+  const [isPhotoFilled, setIsPhotoFilled] = useState(false);
+  const [isMapFilled, setIsMapFilled] = useState(false);
 
+  
   useEffect(() => {
     initDB();
     loadLugares();
@@ -48,6 +50,8 @@ export function TelaSegura({ onLogout }) {
     setCurrentData({imageUri: '', mapCoordinates: null });
     setDescricao('');
     setErrorMessage('');
+    setIsPhotoFilled(false);
+    setIsMapFilled(false);
     loadLugares();
     setModalVisible(false);
   };
@@ -58,13 +62,17 @@ export function TelaSegura({ onLogout }) {
   };
 
   const handleCloseCamera = (imageUri) => {
-    setCurrentData(prevData => ({
-      ...prevData,
-      imageUri: imageUri,
-    }));
+    if (imageUri) {
+      setCurrentData(prevData => ({
+        ...prevData,
+        imageUri: imageUri,
+      }));
+      setIsPhotoFilled(true);
+    }
     setCameraVisible(false);
     setModalVisible(true);
   };
+  
 
   const handleOpenMap = () => {
     setMapVisible(true);
@@ -72,17 +80,20 @@ export function TelaSegura({ onLogout }) {
   };
 
   const handleCloseMap = (coordinates) => {
-    setCurrentData(prevData => ({
-      ...prevData,
-      mapCoordinates: coordinates,
-    }));
+    if (coordinates) {
+      setCurrentData(prevData => ({
+        ...prevData,
+        mapCoordinates: coordinates,
+      }));
+      setIsMapFilled(true);
+    }
     setMapVisible(false);
     setModalVisible(true);
   };
-  
+   
   const handleUpdate = (latitude, longitude, image) => {
     if (editId !== null) {
-      updateLugar(editId,  titulo, latitude , longitude, image, descricao, (success, data) => {
+      updateLugar(editId, titulo, latitude, longitude, image, descricao, (success, data) => {
         if (success) {
           setEditId(null);
           setTitulo('');
@@ -98,8 +109,10 @@ export function TelaSegura({ onLogout }) {
   const handleEdit = (id, title, image, latitude, longitude, descricao) => {
     setEditId(id),
     setTitulo(title),
-    setCurrentData({imageUri: image, mapCoordinates: {latitude: latitude,longitude: longitude}}),
+    setCurrentData({imageUri: image, mapCoordinates: {latitude, longitude}}),
     setDescricao(descricao),
+    setIsPhotoFilled(true),
+    setIsMapFilled(true),
     setModalVisible(true)
   };
 
@@ -136,6 +149,8 @@ export function TelaSegura({ onLogout }) {
             setTitulo('');
             setCurrentData({imageUri: '', mapCoordinates: null });
             setDescricao('');
+            setIsPhotoFilled(false);
+            setIsMapFilled(false);
             loadLugares();
             setModalVisible(false);
           }
@@ -149,7 +164,7 @@ export function TelaSegura({ onLogout }) {
       <Text style={styles.title}>Bem Vindo! </Text>
 
       <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-        <AntDesign name="poweroff" size={36} color="black" />
+        <AntDesign name="poweroff" size={36} color="#BAB195" />
       </TouchableOpacity>
 
       {/* Renderização dos Cards */}
@@ -185,26 +200,21 @@ export function TelaSegura({ onLogout }) {
         <AntDesign name="plus" size={24} color="white" />
       </TouchableOpacity>
 
-      
       <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Cadastre um Lugar no seu coração </Text>
+          <Text style={styles.title}>Cadastre um Lugar no seu coração </Text>
           {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
           <View style={styles.textAreaContainer}>
-          <TouchableOpacity>
             <TextInput style={styles.input} value={titulo} onChangeText={setTitulo} placeholder="Titulo (Obrigatório)" />
-          </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.modalOption} onPress={handleOpenCamera}>
-            <Text style={styles.modalOptionText}> <AntDesign name="camerao" size={24} color="black" /> | Foto </Text>
+          <TouchableOpacity style={[styles.modalOption, isPhotoFilled && styles.filledButton]} onPress={handleOpenCamera}>
+            <Text style={styles.modalOptionText}> <AntDesign name="camerao" size={24} color="black" /> | {isPhotoFilled ? 'Foto Selecionada' : 'Foto'} </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.modalOption} onPress={handleOpenMap}>
-            <Text style={styles.modalOptionText}> <Feather name="map-pin" size={24} color="black" /> | Map </Text>
+          <TouchableOpacity style={[styles.modalOption, isMapFilled && styles.filledButton]} onPress={handleOpenMap}>
+            <Text style={styles.modalOptionText}> <Feather name="map-pin" size={24} color="black" /> | {isMapFilled ? 'Localização Selecionada' : 'Map'} </Text>
           </TouchableOpacity>
           <View style={styles.textAreaContainer}>
-          <TouchableOpacity>
             <TextInput style={styles.modalInput} value={descricao} onChangeText={setDescricao} placeholder="Descrição (Opcional)" />
-          </TouchableOpacity>
           </View>
           <View style={styles.modalButtonContainer}>
             <TouchableOpacity style={[styles.modalButtonCancel]} onPress={handleCloseModal}>
@@ -216,9 +226,8 @@ export function TelaSegura({ onLogout }) {
           </View>
         </View>
       </Modal>
-      
 
-      <Modal visible={cameraVisible} animationType="slide"  onRequestClose={() => handleCloseCamera(currentData.imageUri)}>
+      <Modal visible={cameraVisible} animationType="slide" onRequestClose={() => handleCloseCamera(currentData.imageUri)}>
         <CameraComponent onClose={handleCloseCamera} />
       </Modal>
       <Modal visible={mapVisible} animationType="slide" onRequestClose={() => handleCloseMap(currentData.mapCoordinates)}>
@@ -227,3 +236,4 @@ export function TelaSegura({ onLogout }) {
     </View>
   );
 }
+
