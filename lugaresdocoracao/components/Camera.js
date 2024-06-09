@@ -93,10 +93,10 @@ export function CameraComponent({ onClose }) {
       </Camera>
       <Modal transparent={true} visible={open}>
         <View style={styles.contentPhoto}>
+          <Image style={styles.img} source={{ uri: captured }} />
           <TouchableOpacity style={styles.buttonClose} onPress={handleClose}>
             <AntDesign name="closecircleo" size={24} color="black" />
           </TouchableOpacity>
-          <Image style={styles.img} source={{ uri: captured }} />
           <TouchableOpacity style={styles.buttonConfirm} onPress={handleConfirm}>
             <AntDesign name="checkcircleo" size={24} color="black" />
           </TouchableOpacity>
